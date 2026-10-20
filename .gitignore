@@ -1,0 +1,23 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# OS and language build artifacts
+.DS_Store
+__pycache__/
+*.py[cod]
+node_modules/
+dist/
+
+# Cloud infrastructure tooling and generated state
+.aws-sam/
+cdk.out/
+.terraform/
+terraform.tfstate
+terraform.tfstate.*
+
+# Local rendered previews
+rendered/
