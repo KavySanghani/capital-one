@@ -1,0 +1,43 @@
+flowchart TB
+    U["Customer channels / API clients"]
+    DNS["Amazon Route 53<br/>Dynamic routing and automatic failover"]
+
+    U --> DNS
+
+    subgraph R1["AWS Region 1 — conceptual request path"]
+        direction LR
+        PUB1["Public API endpoint"]
+        PRIV1["Private API domain<br/>CNAME to private load balancer"]
+        LB1["Private load balancer<br/>TLS termination with ACM"]
+        TLS1["TLS listener<br/>Re-establish TLS to backend"]
+        BACK1["Backend<br/>AWS Lambda or ECS with Fargate"]
+
+        PUB1 --> PRIV1 --> LB1 --> TLS1 --> BACK1
+    end
+
+    subgraph R2["AWS Region 2 — conceptual request path"]
+        direction LR
+        PUB2["Public API endpoint"]
+        PRIV2["Private API domain<br/>CNAME to private load balancer"]
+        LB2["Private load balancer<br/>TLS termination with ACM"]
+        TLS2["TLS listener<br/>Re-establish TLS to backend"]
+        BACK2["Backend<br/>AWS Lambda or ECS with Fargate"]
+
+        PUB2 --> PRIV2 --> LB2 --> TLS2 --> BACK2
+    end
+
+    DNS --> PUB1
+    DNS --> PUB2
+
+    DATA["Application-specific data stores<br/>Examples: DynamoDB or RDS<br/>Not required by every API"]
+    BACK1 -. "where applicable" .-> DATA
+    BACK2 -. "where applicable" .-> DATA
+
+    CTRL["Cross-cutting controls<br/>IAM, secret management, observability,<br/>phased rollout and rollback"]
+    CTRL -.-> BACK1
+    CTRL -.-> BACK2
+
+    style R1 fill:#eef6ff,stroke:#5794cc,color:#222
+    style R2 fill:#eefaf0,stroke:#5caa72,color:#222
+    style DATA fill:#fff7e6,stroke:#c48b2c,color:#333
+    style CTRL fill:#f4eafe,stroke:#8267a8,color:#222
