@@ -1,0 +1,32 @@
+flowchart TB
+    subgraph LOCAL["State 0 — Local baseline"]
+      direction LR
+      LC["Developer machine"] --> LAPI["Express API<br/>Docker container"]
+      LAPI --> LDB["PostgreSQL<br/>Docker container"]
+    end
+
+    subgraph EC2["State A — Lift-and-shift to EC2"]
+      direction LR
+      C1["Test client / k6"] -->|HTTP to permitted port| SG1["Restricted EC2 security group"]
+      SG1 --> EAPI["EC2 instance<br/>Express API container"]
+      EAPI --> EDB["PostgreSQL container<br/>Persistent attached storage"]
+    end
+
+    subgraph RDS["State B — EC2 API + private RDS"]
+      direction LR
+      C2["Test client / k6"] -->|HTTP to permitted port| SG2["Restricted EC2 security group"]
+      SG2 --> RAPI["EC2 instance<br/>Express API container"]
+      RAPI -->|PostgreSQL connection, private VPC path| SGDB["DB security group<br/>allow app SG only"]
+      SGDB --> DB["Amazon RDS PostgreSQL<br/>Private subnets; not public"]
+      RAPI -. "logs / metrics when configured" .-> CW["Amazon CloudWatch"]
+    end
+
+    LOCAL -. "same API, schema, seed and test script" .-> EC2
+    EC2 -. "move database component" .-> RDS
+
+    classDef baseline fill:#eef5ff,stroke:#477fb7,color:#182433
+    classDef cloud fill:#edf8f0,stroke:#4d9463,color:#182433
+    classDef managed fill:#fff5e6,stroke:#bc852c,color:#182433
+    class LAPI,LDB,LC baseline
+    class C1,SG1,EAPI,EDB cloud
+    class C2,SG2,RAPI,SGDB,DB,CW managed
