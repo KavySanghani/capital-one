@@ -25,3 +25,7 @@ The course plan proposes deploying a small Dockerized application to a cloud VM,
 - Keep application-specific savings separate from company-wide migration outcomes.
 - Do not claim a total migration budget when the reviewed sources do not disclose one.
 - Never commit cloud credentials, access keys, secrets, or local environment files.
+
+## Week 2: Detailed Report
+
+- [Week 2 detailed report (PDF)](docs/week-2/Capital_One_Week2_Report.pdf) — the final 10-page report covering the case analysis, architecture, outcomes, costs, proposed lab exercise, measurement plan, and team responsibilities.
