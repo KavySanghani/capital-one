@@ -1,0 +1,25 @@
+# Dependency caches
+node_modules/
+
+# Local environment files and secrets
+.env
+.env.*
+
+# Tests and coverage
+tests/
+coverage/
+
+# Version control and tooling metadata
+.git/
+.gitignore
+
+# OS generated files
+.DS_Store
+
+# Documentation and markdown files
+*.md
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
