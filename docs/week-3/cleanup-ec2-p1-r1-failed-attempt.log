@@ -1,0 +1,11 @@
+RUN_ID=ec2-p1-r1
+CLEANUP_START_UTC=2026-11-12T18:52:55.571Z
+ERROR:  syntax error at or near ":"
+LINE 1: DELETE FROM expenses WHERE title LIKE :'prefix';
+                                              ^
+DELETE_EXIT=1
+COUNT_EXIT=0
+K6_COUNT_EXIT=0
+SEED_COUNT=10
+K6_REMAINING=0
+CLEANUP_STATUS=FAILED
