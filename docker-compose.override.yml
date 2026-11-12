@@ -1,0 +1,12 @@
+# State A deployment-specific Compose override
+# This override allows the Express API container to bind to 0.0.0.0:3000:3000
+# so it can accept external HTTP benchmark and health check traffic on EC2,
+# while preserving the original docker-compose.yml configuration and keeping
+# PostgreSQL bound strictly to localhost (127.0.0.1) without public exposure.
+#
+# Using !override replaces the base file's port list instead of merging/appending.
+
+services:
+  api:
+    ports: !override
+      - "0.0.0.0:3000:3000"
