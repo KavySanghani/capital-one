@@ -71,13 +71,15 @@ All nine benchmark runs across three load profiles (P1 = 1 VU, P2 = 5 VUs, P3 = 
 
 ### 5. Week 3 Deliverables & Documentation
 - **[State 0 Benchmark Report](docs/week-3/State_0_Benchmark_Report.md)** — full baseline report detailing methodology, individual run tables, consolidated medians, throughput scaling analysis, and transparent disclosure of measurement limitations and anomalies.
+- **[State A Benchmark Report](docs/week-3/State_A_Benchmark_Report.md)** — EC2 lift-and-shift benchmark report completed by Rishank Dudhat.
+- **[State B Benchmark Report](docs/week-3/State_B_Benchmark_Report.md)** — managed persistence refactoring benchmark report completed by Khush Patel.
 - **[Week 3 Team Handoff Protocol](docs/week-3/team-handoff.md)** — division of team responsibilities (Kavy Sanghani, Rishank Dudhat, Khush Patel), experimental invariants, operational guides, private RDS security rules, and AWS cost-containment protocols.
 - **[Load Testing Infrastructure Guide](tests/load/README.md)** — execution instructions, Docker commands, parameter reference, container telemetry, and cleanup procedures across State 0, State A, and State B.
 
-### 6. Pending Work (State A & State B)
-- **State A (EC2 Lift-and-Shift):** Deploying the identical Docker Compose stack onto an AWS EC2 instance and executing the 9 benchmark runs. Assigned to Rishank Dudhat (Pending).
-- **State B (EC2 API + Private RDS):** Refactoring persistence to a private Amazon RDS PostgreSQL database and evaluating managed service operational impacts. Assigned to Khush Patel (Pending).
-*(Zero AWS cloud performance numbers or cloud billing figures are claimed as complete in Week 3).*
+### 6. Practical Exercise Progression
+- **State 0 (Local Docker Compose):** Completed by Kavy Sanghani.
+- **State A (EC2 Lift-and-Shift):** Completed by Rishank Dudhat.
+- **State B (EC2 API + Private RDS):** Completed by Khush Patel. All 9 benchmark runs verified with 0.00% HTTP errors, median throughput scaling from 5.09 req/s (P1) to 63.95 req/s (P3), and verified database cleanup after every profile.
 
 ---
 
