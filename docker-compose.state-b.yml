@@ -1,0 +1,35 @@
+# State B Docker Compose configuration
+# In State B, PostgreSQL is hosted on private Amazon RDS.
+# This compose file runs only the Express REST API container,
+# binding to 0.0.0.0:3000:3000 to receive external benchmark traffic on EC2,
+# and connecting to the remote managed RDS PostgreSQL instance via DATABASE_URL.
+
+services:
+  api:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: capital-one-api-1
+    restart: unless-stopped
+
+    ports:
+      - "0.0.0.0:3000:3000"
+
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env}
+      DB_POOL_MAX: ${DB_POOL_MAX:-10}
+      DATABASE_SSL: ${DATABASE_SSL:-true}
+      DATABASE_SSL_REJECT_UNAUTHORIZED: ${DATABASE_SSL_REJECT_UNAUTHORIZED:-false}
+
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/health').then(r => { if (!r.ok) process.exit(1); return r.json(); }).then(d => { if (d.status !== 'ok' || d.database !== 'connected') process.exit(1); process.exit(0); }).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s

@@ -16,6 +16,7 @@ if (!Number.isInteger(poolMax) || poolMax < 1) {
 }
 
 const sslEnabled = process.env.DATABASE_SSL === 'true';
+const sslRejectUnauthorized = process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== 'false';
 
 export const pool = new Pool({
   connectionString: databaseUrl,
@@ -23,7 +24,7 @@ export const pool = new Pool({
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
   ssl: sslEnabled
-    ? { rejectUnauthorized: true }
+    ? { rejectUnauthorized: sslRejectUnauthorized }
     : false,
 });
 
