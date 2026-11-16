@@ -398,6 +398,9 @@ All referenced reports, evidence logs, and planning documents exist in the repos
 - [`docs/week-3/ec2-evidence-sha256.txt`](docs/week-3/ec2-evidence-sha256.txt) — SHA-256 checksum manifest for State A evidence files.
 - [`docs/week-3/rds-evidence-sha256.txt`](docs/week-3/rds-evidence-sha256.txt) — SHA-256 checksum manifest for State B evidence files.
 
+### Final Academic Project Report
+- [`docs/final-report/IT457_Capital_One_Cloud_Migration_Final_Report.pdf`](docs/final-report/IT457_Capital_One_Cloud_Migration_Final_Report.pdf) — Comprehensive final university project report (Theme 2: Migration & Transformation).
+
 ### Load Testing Infrastructure & Application Code
 - [`tests/load/README.md`](tests/load/README.md) — k6 load testing execution guide and CLI reference.
 - [`tests/load/expense-load.js`](tests/load/expense-load.js) — Standardized k6 benchmark script.
