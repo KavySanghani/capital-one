@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capital One — Cloud Expense Management Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- App Layout -->
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="brand-icon">
+            <path d="M4 16C4 9.37258 9.37258 4 16 4C22.6274 4 28 9.37258 28 16C28 22.6274 22.6274 28 16 28" stroke="#D03027" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M11 20L21 12" stroke="#004977" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="21" cy="12" r="2.5" fill="#D03027"/>
+          </svg>
+          <div class="brand-text">
+            <span class="brand-title">Capital<span class="brand-accent">One</span></span>
+            <span class="brand-subtitle">Expense Tracker</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-link active" id="nav-dashboard" data-section="dashboard-section">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="9" rx="1"/>
+            <rect x="14" y="3" width="7" height="5" rx="1"/>
+            <rect x="14" y="12" width="7" height="9" rx="1"/>
+            <rect x="3" y="16" width="7" height="5" rx="1"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="#transactions" class="nav-link" id="nav-transactions" data-section="transactions-section">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="8" y1="6" x2="21" y2="6"/>
+            <line x1="8" y1="12" x2="21" y2="12"/>
+            <line x1="8" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="6" x2="3.01" y2="6"/>
+            <line x1="3" y1="12" x2="3.01" y2="12"/>
+            <line x1="3" y1="18" x2="3.01" y2="18"/>
+          </svg>
+          <span>Expenses</span>
+          <span class="nav-badge" id="nav-expense-count">0</span>
+        </a>
+
+        <a href="#add-expense" class="nav-link" id="nav-add-expense" data-section="add-expense-section">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+          <span>Add Expense</span>
+        </a>
+
+        <a href="#architecture" class="nav-link" id="nav-architecture" data-section="architecture-section">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+          <span>Cloud Architecture</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status-card">
+          <div class="status-indicator-row">
+            <span class="status-pulse-dot" id="db-pulse-dot"></span>
+            <span class="status-label" id="db-status-label">Checking DB...</span>
+          </div>
+          <div class="status-meta" id="db-status-meta">PostgreSQL 16</div>
+        </div>
+        <div class="sidebar-project-tag">
+          <span>IT457 Cloud Computing — Theme 2</span>
+          <span class="tag-sub">Capital One Cloud Migration</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Top Header Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle navigation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <div class="header-breadcrumb">
+            <span class="breadcrumb-item">Capital One Cloud Migration</span>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-active" id="header-page-title">Executive Dashboard</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Connection Status Pill -->
+          <div class="connection-pill" id="connection-pill" title="Live PostgreSQL Database Connection">
+            <span class="pill-dot" id="header-pulse-dot"></span>
+            <span class="pill-text" id="header-db-status">PostgreSQL Connected</span>
+          </div>
+
+          <!-- Refresh Button -->
+          <button class="btn btn-secondary btn-sm" id="btn-refresh" title="Refresh data from API">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 4v6h-6"/>
+              <path d="M1 20v-6h6"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+            <span>Refresh</span>
+          </button>
+
+          <!-- Quick Add Button -->
+          <button class="btn btn-primary btn-sm" id="btn-quick-add">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            <span>New Expense</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Toast Notification Container -->
+      <div class="toast-container" id="toast-container"></div>
+
+      <!-- Main Scrollable Area -->
+      <main class="content-container">
+
+        <!-- ==================== SECTION 1: DASHBOARD ==================== -->
+        <section id="dashboard-section" class="content-section active">
+          <!-- Welcome Banner -->
+          <div class="dashboard-banner">
+            <div class="banner-content">
+              <h1 class="banner-title">Capital One Cloud Expense Overview</h1>
+              <p class="banner-subtitle">
+                Real-time operational expense telemetry backed by PostgreSQL 16 and Express REST API.
+              </p>
+            </div>
+            <div class="banner-actions">
+              <span class="banner-badge">State 0 Active Testbed</span>
+            </div>
+          </div>
+
+          <!-- KPI Metric Cards Grid -->
+          <div class="metrics-grid">
+            <!-- Card 1: Total Spend -->
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Total Operational Spend</span>
+                <div class="metric-icon-wrap icon-red">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="metric-value" id="kpi-total-amount">$0.00</div>
+              <div class="metric-footer">
+                <span class="metric-trend positive" id="kpi-total-trend">Across all categories</span>
+              </div>
+            </div>
+
+            <!-- Card 2: Transaction Count -->
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Total Transactions</span>
+                <div class="metric-icon-wrap icon-navy">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="5" width="20" height="14" rx="2"/>
+                    <line x1="2" y1="10" x2="22" y2="10"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="metric-value" id="kpi-tx-count">0</div>
+              <div class="metric-footer">
+                <span class="metric-sub" id="kpi-tx-sub">Stored in PostgreSQL</span>
+              </div>
+            </div>
+
+            <!-- Card 3: Average Transaction -->
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Average Transaction</span>
+                <div class="metric-icon-wrap icon-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                    <polyline points="17 6 23 6 23 12"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="metric-value" id="kpi-avg-amount">$0.00</div>
+              <div class="metric-footer">
+                <span class="metric-sub">Mean per entry</span>
+              </div>
+            </div>
+
+            <!-- Card 4: Top Category -->
+            <div class="metric-card">
+              <div class="metric-header">
+                <span class="metric-title">Highest Spend Category</span>
+                <div class="metric-icon-wrap icon-amber">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="metric-value text-truncate" id="kpi-top-category">—</div>
+              <div class="metric-footer">
+                <span class="metric-sub" id="kpi-top-amount">$0.00 total</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Grid: Category Breakdown + Recent Transactions -->
+          <div class="dashboard-split-grid">
+            <!-- Left: Category Breakdown -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h2 class="card-title">Category Spending Distribution</h2>
+                  <p class="card-subtitle">Aggregated allocation by expense category</p>
+                </div>
+                <span class="badge badge-neutral" id="category-count-badge">0 categories</span>
+              </div>
+              <div class="card-body">
+                <div class="category-bars-container" id="category-bars-list">
+                  <!-- Rendered dynamically -->
+                  <div class="loading-state">
+                    <div class="spinner"></div>
+                    <span>Loading category telemetry...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Recent Transactions -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h2 class="card-title">Recent Transactions</h2>
+                  <p class="card-subtitle">Latest records registered in database</p>
+                </div>
+                <button class="btn-link" id="btn-view-all-expenses">View all &rarr;</button>
+              </div>
+              <div class="card-body p-0">
+                <div class="recent-tx-list" id="recent-tx-list">
+                  <!-- Rendered dynamically -->
+                  <div class="loading-state">
+                    <div class="spinner"></div>
+                    <span>Fetching latest entries...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== SECTION 2: EXPENSES ==================== -->
+        <section id="transactions-section" class="content-section">
+          <div class="section-header-row">
+            <div>
+              <h1 class="section-title">Expense Management</h1>
+              <p class="section-subtitle">Search, filter, inspect and manage database records via existing REST endpoints</p>
+            </div>
+            <div class="section-actions">
+              <button class="btn btn-primary" id="btn-open-add-form">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span>Add Expense</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter / Search Controls Card -->
+          <div class="card filter-bar-card">
+            <div class="filter-controls-grid">
+              <!-- Search Input -->
+              <div class="form-group mb-0 search-group">
+                <label for="filter-search" class="form-label">Search Description</label>
+                <div class="input-icon-wrap">
+                  <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                  <input type="text" id="filter-search" class="form-input has-icon" placeholder="e.g. Electricity, Server, AWS...">
+                </div>
+              </div>
+
+              <!-- Category Filter -->
+              <div class="form-group mb-0">
+                <label for="filter-category" class="form-label">Filter Category</label>
+                <select id="filter-category" class="form-select">
+                  <option value="ALL">All Categories</option>
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <!-- Sort Order -->
+              <div class="form-group mb-0">
+                <label for="filter-sort" class="form-label">Sort By</label>
+                <select id="filter-sort" class="form-select">
+                  <option value="date-desc">Date (Newest first)</option>
+                  <option value="date-asc">Date (Oldest first)</option>
+                  <option value="amount-desc">Amount (Highest first)</option>
+                  <option value="amount-asc">Amount (Lowest first)</option>
+                  <option value="title-asc">Description (A-Z)</option>
+                </select>
+              </div>
+
+              <!-- Reset Button -->
+              <div class="form-group mb-0 filter-btn-col">
+                <label class="form-label d-none-mobile">&nbsp;</label>
+                <button class="btn btn-secondary w-100" id="btn-reset-filters">
+                  <span>Reset Filters</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Expenses Table Card -->
+          <div class="card">
+            <div class="card-header border-bottom">
+              <div class="table-results-info">
+                <span id="table-record-count" class="results-text">Showing 0 expenses</span>
+                <span id="table-filtered-sum" class="results-sum">Total: $0.00</span>
+              </div>
+              <div class="table-legend">
+                <span class="legend-badge">Ordered by: <code>expense_date DESC, id DESC</code></span>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table" id="expenses-table">
+                <thead>
+                  <tr>
+                    <th class="th-id">ID</th>
+                    <th class="th-date">Expense Date</th>
+                    <th class="th-title">Description / Title</th>
+                    <th class="th-category">Category</th>
+                    <th class="th-amount text-right">Amount</th>
+                    <th class="th-actions text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="expenses-table-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Table Loading & Empty States -->
+            <div id="table-loading" class="table-state-box loading-box">
+              <div class="spinner"></div>
+              <span>Fetching live expenses from PostgreSQL...</span>
+            </div>
+
+            <div id="table-empty" class="table-state-box empty-box d-none">
+              <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+              <h3 class="empty-title">No expenses found</h3>
+              <p class="empty-desc">No expense records match your active search or category filters.</p>
+              <button class="btn btn-secondary btn-sm" id="btn-empty-reset">Clear Filters</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== SECTION 3: ADD EXPENSE ==================== -->
+        <section id="add-expense-section" class="content-section">
+          <div class="section-header-row">
+            <div>
+              <h1 class="section-title">Add New Expense</h1>
+              <p class="section-subtitle">Register a new expenditure to PostgreSQL using <code>POST /expenses</code></p>
+            </div>
+          </div>
+
+          <div class="form-card-container">
+            <div class="card">
+              <div class="card-header border-bottom">
+                <div>
+                  <h2 class="card-title">Expense Transaction Details</h2>
+                  <p class="card-subtitle">All fields validated against the database schema constraints</p>
+                </div>
+                <span class="badge badge-accent">POST /expenses</span>
+              </div>
+
+              <div class="card-body">
+                <!-- Inline Feedback Alert -->
+                <div id="form-alert" class="alert d-none" role="alert"></div>
+
+                <form id="add-expense-form" novalidate>
+                  <div class="form-grid">
+                    <!-- Title / Description -->
+                    <div class="form-group col-span-2">
+                      <label for="expense-title" class="form-label required">Description / Title</label>
+                      <input
+                        type="text"
+                        id="expense-title"
+                        name="title"
+                        class="form-input"
+                        placeholder="e.g. AWS EC2 c7i-flex Compute Instance"
+                        maxlength="120"
+                        required
+                      >
+                      <div class="form-hint-row">
+                        <span class="form-hint">Brief title of expenditure (1–120 characters)</span>
+                        <span class="char-counter" id="title-char-count">0/120</span>
+                      </div>
+                      <div class="form-error" id="title-error"></div>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-group">
+                      <label for="expense-category" class="form-label required">Category</label>
+                      <div class="category-input-wrap">
+                        <select id="expense-category-select" class="form-select mb-2">
+                          <option value="">Select an existing category...</option>
+                          <option value="Utilities">Utilities</option>
+                          <option value="Infrastructure">Infrastructure</option>
+                          <option value="Networking">Networking</option>
+                          <option value="Software">Software</option>
+                          <option value="Hardware">Hardware</option>
+                          <option value="Travel">Travel</option>
+                          <option value="Office">Office</option>
+                          <option value="__CUSTOM__">+ Enter custom category...</option>
+                        </select>
+                        <input
+                          type="text"
+                          id="expense-category-custom"
+                          name="category"
+                          class="form-input d-none"
+                          placeholder="Type custom category name..."
+                          maxlength="50"
+                        >
+                      </div>
+                      <span class="form-hint">Classification tag (1–50 characters)</span>
+                      <div class="form-error" id="category-error"></div>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="form-group">
+                      <label for="expense-amount" class="form-label required">Amount ($ USD)</label>
+                      <div class="input-currency-wrap">
+                        <span class="currency-symbol">$</span>
+                        <input
+                          type="number"
+                          id="expense-amount"
+                          name="amount"
+                          class="form-input has-currency"
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0.01"
+                          max="9999999999.99"
+                          required
+                        >
+                      </div>
+                      <span class="form-hint">Positive numeric value (up to 2 decimals)</span>
+                      <div class="form-error" id="amount-error"></div>
+                    </div>
+
+                    <!-- Expense Date -->
+                    <div class="form-group col-span-2">
+                      <label for="expense-date" class="form-label required">Expense Date</label>
+                      <input
+                        type="date"
+                        id="expense-date"
+                        name="expense_date"
+                        class="form-input"
+                        required
+                      >
+                      <span class="form-hint">Calendar date format (YYYY-MM-DD)</span>
+                      <div class="form-error" id="date-error"></div>
+                    </div>
+                  </div>
+
+                  <!-- Form Action Buttons -->
+                  <div class="form-actions-row">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-form">
+                      <span>Clear Form</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="btn-submit-expense">
+                      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                      </svg>
+                      <span id="btn-submit-text">Save Expense to Database</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== SECTION 4: ARCHITECTURE ==================== -->
+        <section id="architecture-section" class="content-section">
+          <div class="section-header-row">
+            <div>
+              <h1 class="section-title">Cloud Migration Architecture Progression</h1>
+              <p class="section-subtitle">IT457 Theme 2 — Capital One Case Study Evolution across State 0, State A, and State B</p>
+            </div>
+            <span class="badge badge-accent">Project Architecture Overview</span>
+          </div>
+
+          <!-- Architecture Disclaimer Banner -->
+          <div class="architecture-notice">
+            <div class="notice-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+            </div>
+            <div class="notice-text">
+              <strong>Demonstration & Historical Benchmark Clarification:</strong>
+              The sections below document the architectural progression delivered during our cloud migration study.
+              <strong>State 0</strong> is currently executing locally in Docker Compose as the active interactive project demonstration testbed.
+              <strong>State A</strong> and <strong>State B</strong> represent historical completed deployment milestones that were benchmarked and subsequently terminated to eliminate ongoing cloud costs.
+            </div>
+          </div>
+
+          <!-- 3 States Cards Grid -->
+          <div class="architecture-grid">
+            <!-- State 0 Card -->
+            <div class="arch-card active-state-border">
+              <div class="arch-card-header">
+                <div class="arch-badge-row">
+                  <span class="badge badge-state0">State 0</span>
+                  <span class="badge badge-live">Active Live Testbed</span>
+                </div>
+                <h3 class="arch-title">Local Docker Compose</h3>
+                <p class="arch-tagline">Baseline Monolithic Container Stack</p>
+              </div>
+
+              <div class="arch-card-body">
+                <div class="arch-diagram-box">
+                  <div class="diagram-node node-local">
+                    <span class="node-icon">&#128187;</span>
+                    <span class="node-title">Local Machine</span>
+                    <span class="node-sub">Docker Engine Network</span>
+                  </div>
+                  <div class="diagram-arrow">&darr; bridge &darr;</div>
+                  <div class="diagram-row">
+                    <div class="diagram-node node-service">
+                      <span class="node-title">Node.js API</span>
+                      <span class="node-sub">Port 3000</span>
+                    </div>
+                    <div class="diagram-arrow-h">&harr;</div>
+                    <div class="diagram-node node-db">
+                      <span class="node-title">PostgreSQL 16</span>
+                      <span class="node-sub">Docker Volume</span>
+                    </div>
+                  </div>
+                </div>
+
+                <ul class="arch-spec-list">
+                  <li><strong>Host:</strong> Local macOS / Linux Developer Environment</li>
+                  <li><strong>Compute:</strong> Express 5.3 REST API Container</li>
+                  <li><strong>Database:</strong> Containerized PostgreSQL 16 on bridge network</li>
+                  <li><strong>Storage:</strong> Docker named volume <code>postgres_data</code></li>
+                  <li><strong>Benchmark Role:</strong> Baseline k6 benchmark (56,238 requests across 9 runs)</li>
+                </ul>
+              </div>
+
+              <div class="arch-card-footer">
+                <span class="arch-footer-label">Primary Limitation:</span>
+                <span class="arch-footer-val">No high availability; runs solely on single local machine</span>
+              </div>
+            </div>
+
+            <!-- State A Card -->
+            <div class="arch-card">
+              <div class="arch-card-header">
+                <div class="arch-badge-row">
+                  <span class="badge badge-statea">State A</span>
+                  <span class="badge badge-completed">Historical Completed Deployment</span>
+                </div>
+                <h3 class="arch-title">Lift-and-Shift EC2</h3>
+                <p class="arch-tagline">Historical Self-Managed Co-located Cloud VM (Terminated)</p>
+              </div>
+
+              <div class="arch-card-body">
+                <div class="arch-diagram-box">
+                  <div class="diagram-node node-aws">
+                    <span class="node-icon">&#9729;</span>
+                    <span class="node-title">AWS Public Subnet (ap-south-1a)</span>
+                    <span class="node-sub">Amazon EC2 (c7i-flex.large)</span>
+                  </div>
+                  <div class="diagram-arrow">&darr; bridge / loopback &darr;</div>
+                  <div class="diagram-row">
+                    <div class="diagram-node node-service">
+                      <span class="node-title">Node.js API</span>
+                      <span class="node-sub">Port 3000 (Host Bound)</span>
+                    </div>
+                    <div class="diagram-arrow-h">&harr;</div>
+                    <div class="diagram-node node-db">
+                      <span class="node-title">PostgreSQL 16</span>
+                      <span class="node-sub">Co-located Container</span>
+                    </div>
+                  </div>
+                </div>
+
+                <ul class="arch-spec-list">
+                  <li><strong>Status:</strong> Historical completed benchmark (resources terminated)</li>
+                  <li><strong>Host:</strong> Amazon EC2 <code>c7i-flex.large</code> (Amazon Linux 2023 / AL2023)</li>
+                  <li><strong>Compute:</strong> Application container running on EC2 via Docker Compose</li>
+                  <li><strong>Database:</strong> PostgreSQL 16 container co-located on same EC2 VM</li>
+                  <li><strong>Storage:</strong> EBS gp3 Root Volume (16 GiB, co-located container data)</li>
+                  <li><strong>Migration Strategy:</strong> Direct lift-and-shift with identical software stack</li>
+                </ul>
+              </div>
+
+              <div class="arch-card-footer">
+                <span class="arch-footer-label">Primary Trade-Off:</span>
+                <span class="arch-footer-val">Single failure domain on EC2 VM; self-managed host and Docker administration</span>
+              </div>
+            </div>
+
+            <!-- State B Card -->
+            <div class="arch-card">
+              <div class="arch-card-header">
+                <div class="arch-badge-row">
+                  <span class="badge badge-stateb">State B</span>
+                  <span class="badge badge-completed">Historical Completed Deployment</span>
+                </div>
+                <h3 class="arch-title">Decoupled EC2 + Amazon RDS</h3>
+                <p class="arch-tagline">Historical Managed Database Benchmark (Terminated)</p>
+              </div>
+
+              <div class="arch-card-body">
+                <div class="arch-diagram-box">
+                  <div class="diagram-node node-aws">
+                    <span class="node-icon">&#9729;</span>
+                    <span class="node-title">AWS VPC Architecture (ap-south-1)</span>
+                    <span class="node-sub">Single-AZ Managed RDS Topology</span>
+                  </div>
+                  <div class="diagram-row mt-2">
+                    <div class="diagram-node node-service">
+                      <span class="node-title">EC2 App Tier</span>
+                      <span class="node-sub">Public Subnet (ap-south-1a)</span>
+                    </div>
+                    <div class="diagram-arrow-h">&rarr; private &rarr;</div>
+                    <div class="diagram-node node-rds">
+                      <span class="node-title">Amazon RDS</span>
+                      <span class="node-sub">Single-AZ (ap-south-1c)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <ul class="arch-spec-list">
+                  <li><strong>Status:</strong> Historical completed benchmark (resources terminated)</li>
+                  <li><strong>App Host:</strong> Amazon EC2 <code>c7i-flex.large</code> (2 vCPU, 4 GiB RAM)</li>
+                  <li><strong>Database Tier:</strong> Single-AZ Amazon RDS PostgreSQL 16.15 (<code>db.t4g.micro</code>, 20 GiB GP3)</li>
+                  <li><strong>Deployment Mode:</strong> Single-AZ deployment (1 DB instance) for fair comparison &amp; cost containment</li>
+                  <li><strong>Network Security:</strong> Isolated private DB subnet group (no public IP)</li>
+                  <li><strong>Operational Gain:</strong> AWS-managed DBMS provisioning, software patching, and storage maintenance</li>
+                </ul>
+              </div>
+
+              <div class="arch-card-footer">
+                <span class="arch-footer-label">Modernization Benefit:</span>
+                <span class="arch-footer-val">Decoupled compute/database tiers, managed DBMS patching, and VPC isolation</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Architecture Comparison Table Card -->
+          <div class="card mt-4">
+            <div class="card-header border-bottom">
+              <div>
+                <h2 class="card-title">Comparative Architecture Matrix</h2>
+                <p class="card-subtitle">Detailed evaluation across operational and structural dimensions</p>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Dimension</th>
+                    <th>State 0 (Local Docker Testbed)</th>
+                    <th>State A (Historical EC2 Lift-and-Shift)</th>
+                    <th>State B (Historical EC2 + RDS Single-AZ)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Architecture Topology</strong></td>
+                    <td>Single-host container bridge network</td>
+                    <td>Single-host co-located EC2 VM</td>
+                    <td>Decoupled two-tier VPC (Public + Private Subnets)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Database Management</strong></td>
+                    <td>Self-managed container (Docker Compose)</td>
+                    <td>Self-managed container on EC2 (Docker Compose)</td>
+                    <td>Fully managed AWS service (Amazon RDS PostgreSQL)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Deployment Mode &amp; HA</strong></td>
+                    <td>None (Local developer machine)</td>
+                    <td>None (Single EC2 VM failure domain)</td>
+                    <td>Single-AZ deployment (1 DB instance in ap-south-1c)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Backups &amp; Storage Persistence</strong></td>
+                    <td>Manual Docker volume copy</td>
+                    <td>EBS root volume (16 GiB) / manual pg_dump</td>
+                    <td>Managed GP3 storage volume (20 GiB); automated backup retention was not configured or verified in benchmark run</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Security &amp; Network Isolation</strong></td>
+                    <td>Localhost only (127.0.0.1)</td>
+                    <td>Host Security Group on single EC2</td>
+                    <td>Strict Private DB Subnet Group + Tiered Security Groups</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Operational Maintenance</strong></td>
+                    <td>Developer overhead</td>
+                    <td>Sysadmin OS + Docker container patch burden</td>
+                    <td>AWS managed DBMS updates, storage maintenance, and monitoring</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Cost and Implementation Effort Comparison Card -->
+          <div class="card mt-4">
+            <div class="card-header border-bottom">
+              <div>
+                <h2 class="card-title">Cost and Implementation Effort Comparison</h2>
+                <p class="card-subtitle">Documented monthly projections, implementation effort estimates, and short-duration lab costs</p>
+              </div>
+              <span class="badge badge-accent">Financial &amp; Operational Analysis</span>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Migration State</th>
+                    <th>Documented Monthly AWS Estimate</th>
+                    <th>Actual Short-Duration Lab Cost</th>
+                    <th>Implementation Effort (Estimate)</th>
+                    <th>Cost Breakdown &amp; Scope</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>State 0</strong><br><span style="font-size: 0.75rem; color: var(--color-text-muted);">Local Docker Testbed</span></td>
+                    <td><strong>$0.00</strong><br><span style="font-size: 0.75rem; color: var(--color-text-muted);">$0 incremental AWS cost</span></td>
+                    <td>$0.00</td>
+                    <td>~15 minutes <span style="font-size: 0.72rem; color: var(--color-text-muted);">(Estimate)</span></td>
+                    <td>Developer hardware execution; zero cloud billing.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>State A</strong><br><span style="font-size: 0.75rem; color: var(--color-text-muted);">Historical EC2 Lift-and-Shift</span></td>
+                    <td><strong>$63.36 / month</strong><br><span style="font-size: 0.75rem; color: var(--color-text-muted);">(EC2 &amp; EBS storage)</span></td>
+                    <td>~$1.19<br><span style="font-size: 0.72rem; color: var(--color-text-muted);">(~13 hrs uptime)</span></td>
+                    <td>1–2 hours <span style="font-size: 0.72rem; color: var(--color-text-muted);">(Estimate)</span></td>
+                    <td>Amazon EC2 <code>c7i-flex.large</code> ($61.90) + 16 GiB GP3 root EBS volume ($1.46).</td>
+                  </tr>
+                  <tr>
+                    <td><strong>State B</strong><br><span style="font-size: 0.75rem; color: var(--color-text-muted);">Historical EC2 + RDS Single-AZ</span></td>
+                    <td>
+                      <div><strong>$80.99 / month</strong> <span style="font-size: 0.75rem; color: var(--color-text-muted);">(Baseline estimate)</span></div>
+                      <div class="mt-2"><strong>$124.38 / month</strong> <span style="font-size: 0.75rem; color: var(--color-text-muted);">(AWS Calculator, Nov 14 2026)</span></div>
+                    </td>
+                    <td>~$0.28<br><span style="font-size: 0.72rem; color: var(--color-text-muted);">(~2.5 hrs uptime)</span></td>
+                    <td>2–3 hours <span style="font-size: 0.72rem; color: var(--color-text-muted);">(Estimate)</span></td>
+                    <td>
+                      EC2 compute ($63.36) + Amazon RDS PostgreSQL (baseline $17.63 vs. calculator export $61.02).
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="card-body" style="background-color: var(--color-bg-subtle); border-top: 1px solid var(--color-border);">
+              <div style="display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.82rem; color: var(--color-text-secondary); line-height: 1.55;">
+                <div>
+                  <strong style="color: var(--color-navy);">State B Pricing Reconciliation &amp; Transparency:</strong>
+                  The State B monthly projections reflect two distinct documented figures: the project report baseline of <strong>$80.99/month</strong> (EC2 $63.36 + RDS db.t4g.micro $17.63) and the AWS Pricing Calculator export dated November 14, 2026 of <strong>$124.38/month</strong> (EC2 $63.36 + RDS PostgreSQL $61.02). These figures differ because the AWS Pricing Calculator summary export does not expose enough configuration detail to identify the $43.39/month RDS difference. Both figures are presented transparently.
+                </div>
+                <div>
+                  <strong style="color: var(--color-navy);">Short-Duration Lab Costs vs. Monthly Projections:</strong>
+                  Actual AWS billing incurred during our benchmarking was approximately <strong>$1.19</strong> for State A (~13 hours total instance runtime) and approximately <strong>$0.28</strong> for State B (~2.5 hours total EC2 and RDS runtime). These short-duration experimental run costs reflect brief benchmarking executions and must be clearly distinguished from continuous 730-hour theoretical monthly projections.
+                </div>
+                <div>
+                  <strong style="color: var(--color-navy);">Implementation Effort Notice:</strong>
+                  All implementation effort figures (approx. 15 minutes for State 0, 1–2 hours for State A, and 2–3 hours for State B) are engineering estimates based on setup procedures and team handoffs, not stopwatch-measured timings.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-backdrop d-none" id="delete-modal-backdrop">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <div class="modal-icon-wrap icon-danger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="modal-title" id="modal-title">Confirm Expense Deletion</h3>
+          <p class="modal-subtitle">This will permanently delete the record via <code>DELETE /expenses/:id</code></p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="delete-summary-box">
+          <div class="delete-item-row">
+            <span class="delete-label">Expense ID:</span>
+            <span class="delete-val" id="delete-modal-id">—</span>
+          </div>
+          <div class="delete-item-row">
+            <span class="delete-label">Description:</span>
+            <span class="delete-val text-bold" id="delete-modal-title">—</span>
+          </div>
+          <div class="delete-item-row">
+            <span class="delete-label">Category:</span>
+            <span class="delete-val" id="delete-modal-category">—</span>
+          </div>
+          <div class="delete-item-row">
+            <span class="delete-label">Amount:</span>
+            <span class="delete-val text-red text-bold" id="delete-modal-amount">—</span>
+          </div>
+          <div class="delete-item-row">
+            <span class="delete-label">Expense Date:</span>
+            <span class="delete-val" id="delete-modal-date">—</span>
+          </div>
+        </div>
+        <p class="modal-warning-text">
+          This operation calls the existing backend <code>DELETE /expenses/:id</code> endpoint and removes the row from the PostgreSQL database.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn-cancel-delete">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-delete">
+          <span id="btn-delete-text">Delete Expense</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vanilla JavaScript Application Logic -->
+  <script src="/app.js"></script>
+</body>
+</html>
